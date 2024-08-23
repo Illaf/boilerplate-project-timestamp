@@ -17,7 +17,27 @@ app.use(express.static('public'));
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
+app.get('/api/:date?', (req, res) => {
+  const { date } = req.params;
+  let parsedDate;
 
+  if (!date) {
+    parsedDate = new Date();
+  } else if (!isNaN(date)) {
+    parsedDate = new Date(parseInt(date));
+  } else {
+    parsedDate = new Date(date);
+  }
+
+  if (isNaN(parsedDate.getTime())) {
+    res.json({ error: "Invalid Date" });
+  } else {
+    res.json({
+      unix: parsedDate.getTime(),
+      utc: parsedDate.toUTCString(),
+    });
+  }
+});
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
